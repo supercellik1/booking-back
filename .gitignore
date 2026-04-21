@@ -1,0 +1,104 @@
+## Build results
+bin/
+obj/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Rider / JetBrains
+.idea/
+
+## VS Code
+.vscode/
+
+## Logs
+*.log
+
+## NuGet
+*.nupkg
+packages/
+!packages/build/
+*.nuget.props
+*.nuget.targets
+
+## .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+## Entity Framework
+*.mdf
+*.ldf
+
+## Publish output
+publish/
+*.publishproj
+
+## Azure
+*.azurePubxml
+*.pubxml
+*.publishsettings
+
+## Resharper
+_ReSharper*/
+*.DotSettings.user
+
+## OS files
+.DS_Store
+Thumbs.db
+
+## Test results
+TestResults/
+*.trx
+*.coverage
+
+## DotCover
+*.dotCover
+
+## Coverlet
+coverage*.json
+coverage*.xml
+
+## Temporary files
+*.tmp
+*.temp
+
+## Backup files
+*.bak
+*.backup
+
+## Generated files
+Generated_Code/
+
+## Logs and diagnostics
+*.svclog
+
+## Rider
+*.sln.iml
+
+## dotnet watch
+.hotreload/
+
+## Local settings
+appsettings.Development.json
+
+## Secrets
+secrets.json
+
+## Docker
+docker-compose.override.yml
+
+## Node (если есть фронтенд)
+node_modules/
+dist/
+build/
+
+## Mac/Linux
+*.swp
