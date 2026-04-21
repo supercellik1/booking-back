@@ -7,4 +7,5 @@ public class User
     public string FullName { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
     public string Role { get; set; } = "User"; 
+     public List<Favorite> Favorites { get; set; } = new();
 }
