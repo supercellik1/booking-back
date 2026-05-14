@@ -16,4 +16,5 @@ public class Hotel
     public Guid OwnerId { get; set; }
     public User? Owner { get; set; }
     public string Status { get; set; } = "Pending";
+    public List<Review> Reviews { get; set; } = new();
 }
