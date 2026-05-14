@@ -12,4 +12,8 @@ public class Hotel
     public string MapUrl { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty; 
     public List<string> Images { get; set; } = new();
+
+    public Guid OwnerId { get; set; }
+    public User? Owner { get; set; }
+    public string Status { get; set; } = "Pending";
 }

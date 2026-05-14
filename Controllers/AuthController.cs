@@ -31,7 +31,7 @@ public class AuthController : ControllerBase
         {
             Email = request.Email,
             FullName = request.FullName,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.PasswordHash) 
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.PasswordHash)
         };
 
         _db.Users.Add(user);
@@ -52,7 +52,7 @@ public class AuthController : ControllerBase
 
         return Ok(new AuthResponse(
             token, 
-            new UserDto(user.Id, user.Email, user.FullName)
+            new UserDto(user.Id, user.Email, user.FullName, user.Role)
         ));
     }
     
@@ -87,7 +87,26 @@ public class AuthController : ControllerBase
         return Ok(new {
             Id = user.Id,
             Email = user.Email,
-            FullName = user.FullName
+            FullName = user.FullName,
+            role = user.Role
         });
     }
-}
+
+
+    [HttpGet("users")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var users = await _db.Users
+            .Select(u => new
+            {
+                u.Id,
+                u.Email,
+                u.FullName,
+                u.Role
+            })
+            .ToListAsync();
+
+        return Ok(users);
+    }
+    }

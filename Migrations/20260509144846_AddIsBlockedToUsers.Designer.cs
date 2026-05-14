@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260419134824_AddFavoritesTable")]
-    partial class AddFavoritesTable
+    [Migration("20260509144846_AddIsBlockedToUsers")]
+    partial class AddIsBlockedToUsers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,6 +66,27 @@ namespace Backend.Migrations
                     b.ToTable("Bookings");
                 });
 
+            modelBuilder.Entity("Backend.Models.Favorite", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("HotelId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.HasKey("UserId", "HotelId");
+
+                    b.HasIndex("HotelId");
+
+                    b.ToTable("Favorites");
+                });
+
             modelBuilder.Entity("Backend.Models.Hotel", b =>
                 {
                     b.Property<int>("Id")
@@ -102,6 +123,9 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Price")
                         .IsRequired()
                         .HasColumnType("text");
@@ -109,7 +133,13 @@ namespace Backend.Migrations
                     b.Property<double>("Rating")
                         .HasColumnType("double precision");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Hotels");
                 });
@@ -127,6 +157,9 @@ namespace Backend.Migrations
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsBlocked")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -150,6 +183,41 @@ namespace Backend.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Backend.Models.Favorite", b =>
+                {
+                    b.HasOne("Backend.Models.Hotel", "Hotel")
+                        .WithMany()
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithMany("Favorites")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Backend.Models.Hotel", b =>
+                {
+                    b.HasOne("Backend.Models.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("Backend.Models.User", b =>
+                {
+                    b.Navigation("Favorites");
                 });
 #pragma warning restore 612, 618
         }

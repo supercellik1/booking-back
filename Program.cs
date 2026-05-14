@@ -3,14 +3,43 @@ using Backend.Models;
 using Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
+
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddOpenApi(); 
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = @"JWT авторизация через Bearer токен. 
+Вставьте строку вида 'Bearer {ваш_токен}' в поле ниже.
+Пример: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -45,7 +74,8 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
-        ClockSkew = TimeSpan.Zero 
+        ClockSkew = TimeSpan.Zero,
+        RoleClaimType = System.Security.Claims.ClaimTypes.Role
     };
 });
 
@@ -53,10 +83,9 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+    app.UseSwagger();
+    app.UseSwaggerUI(); 
+
 
 app.UseHttpsRedirection();
 
@@ -64,6 +93,7 @@ app.UseCors("AllowReactApp");
 
 app.UseAuthentication();    
 app.UseAuthorization();     
+
 
 app.MapControllers();       
 
