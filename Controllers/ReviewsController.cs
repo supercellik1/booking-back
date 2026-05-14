@@ -10,9 +10,9 @@ using Backend.DTOs;
 [Route("api/[controller]")]
 public class ReviewsController : ControllerBase
 {
-    private readonly ApplicationDbContext _context; 
+    private readonly AppDbContext _context; 
 
-    public ReviewsController(ApplicationDbContext context) => _context = context;
+    public ReviewsController(AppDbContext context) => _context = context;
 
     [HttpGet("my")]
     public async Task<ActionResult<IEnumerable<ReviewDto>>> GetMyReviews()
@@ -55,4 +55,24 @@ public class ReviewsController : ControllerBase
 
         return Ok();
     }
+
+    [HttpGet("hotel/{hotelId}")]
+    [AllowAnonymous] 
+    public async Task<ActionResult> GetHotelReviews(int hotelId)
+	{
+    var reviews = await _context.Reviews
+        .Include(r => r.User) 
+        .Where(r => r.HotelId == hotelId)
+        .OrderByDescending(r => r.CreatedAt)
+        .Select(r => new {
+            r.Id,
+            userName = r.User!.FullName,
+            r.Rating,
+            r.Comment,
+            r.CreatedAt
+        })
+        .ToListAsync();
+
+    return Ok(reviews);
+	}
 }
